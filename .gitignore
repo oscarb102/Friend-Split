@@ -1,0 +1,7 @@
+node_modules/
+
+# Generate package.json
+/package-lock.json
+
+# Generated folder form .Next
+.next/
