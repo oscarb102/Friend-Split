@@ -1,10 +1,11 @@
 import { Button } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WarningAlert from "./warningAlert";
 
 export default function CalculateButton( {friends, updateResults} ) {
     const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMessage] = useState('');
+    const [timeoutId, setTimeoutId] = useState(null);
     var dollarRegex = RegExp("^\\d+\\.\\d\\d$");
     var taxRegex = RegExp("^\\d\\.\\d\\d+$");
 
@@ -62,6 +63,13 @@ export default function CalculateButton( {friends, updateResults} ) {
         if (possibleName !== '') {
             setShowWarning(true);
             setWarningMessage('Invalid Amount for ' + possibleName);
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            const id = setTimeout(() => {
+                setShowWarning(false);
+            }, 3000);
+            setTimeoutId(id);
             return;
         }
 
@@ -92,11 +100,13 @@ export default function CalculateButton( {friends, updateResults} ) {
         updateResults(newResults);
     }
 
-    if (showWarning) {
-        setTimeout(() => {
-            setShowWarning(false);
-        }, 3000);
-    }
+    useEffect(() => {
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        }
+    }, [timeoutId]);
 
     return (
     <div style={{display: "flex", justifyContent: "center", width: "800px", marginTop: "20px"}}>
